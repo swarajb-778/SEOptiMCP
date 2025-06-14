@@ -200,6 +200,87 @@ class GeminiService {
     }
   }
 
+  async generateProgrammaticSEOPlan(websiteAnalysis, selectedKeywords) {
+    if (!this.genAI) {
+      throw new Error('Gemini AI not initialized - API key missing');
+    }
+
+    try {
+      const prompt = `
+        Generate a PRACTICAL SEO STRATEGY for creating 4-5 optimized SEO pages based on:
+
+        Website Analysis: ${JSON.stringify(websiteAnalysis, null, 2)}
+        Selected Keywords: ${selectedKeywords.join(', ')}
+
+        Create a focused SEO strategy with these sections:
+
+        1. SEO PAGE STRATEGY (4-5 Pages)
+        - Target: Create 4-5 high-quality SEO pages (perfect for free tier)
+        - Each page targets 1 primary keyword + 2-3 related keywords
+        - Focus on conversion and user value over quantity
+        - Estimated traffic: 500-2000 monthly visitors per page
+
+        2. KEYWORD OPTIMIZATION FOR EACH PAGE
+        For each selected keyword, provide:
+        - Primary keyword (main focus)
+        - 2-3 secondary keywords for the same page
+        - Long-tail variations for natural content
+        - Search intent alignment (informational, commercial, transactional)
+
+        3. ON-PAGE SEO REQUIREMENTS
+        Essential elements for each page:
+        - SEO title (50-60 characters with primary keyword)
+        - Meta description (150-160 characters, compelling CTA)
+        - H1 (includes primary keyword naturally)
+        - H2/H3 structure (2-4 sections per page)
+        - Keyword density: 1-2% (natural integration)
+        - Internal linking opportunities
+        - Schema markup (Article/Product/Service type)
+
+        4. CONTENT STRUCTURE TEMPLATE
+        For each page (800-1200 words):
+        - Introduction (150 words) - problem/need identification
+        - Main content sections (500-800 words) - solutions/information
+        - Conclusion with CTA (100-150 words) - conversion focus
+        - Natural keyword placement throughout
+
+        5. TECHNICAL SEO CHECKLIST
+        - Fast loading pages (optimize images, minify CSS/JS)
+        - Mobile responsive design
+        - Proper URL structure (/keyword-phrase)
+        - Canonical tags to avoid duplicate content
+        - Alt text for images
+        - Social media meta tags (Open Graph)
+
+        6. IMPLEMENTATION PLAN
+        Week 1: Create first 2 pages with primary keywords
+        Week 2: Add remaining 2-3 pages
+        Week 3: Optimize and test all pages
+        Week 4: Monitor performance and adjust
+
+        7. SUCCESS METRICS (Realistic for 4-5 pages)
+        - Target: 2,500-10,000 monthly organic visitors
+        - Conversion rate: 2-5% (50-500 leads/month)
+        - Time to see results: 2-3 months
+        - Cost per page: ~$0.20 (very affordable with Gemini free tier)
+
+        Focus on QUALITY over QUANTITY. These 4-5 pages should be highly optimized, 
+        conversion-focused, and provide real value to users.
+        
+        Return a detailed, actionable response formatted with clear headings and bullet points.
+      `;
+
+      const result = await this.model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      
+      return text;
+    } catch (error) {
+      console.error('Programmatic SEO plan generation failed:', error);
+      throw new Error(`Programmatic SEO plan generation failed: ${error.message}`);
+    }
+  }
+
   generateFallbackKeywords(seedKeyword, count) {
     const patterns = [
       `best ${seedKeyword}`,

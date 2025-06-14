@@ -76,41 +76,45 @@ class WebsiteAnalyzer {
     }
 
     try {
-      const prompt = `
-        Analyze this website content and generate 6-7 high-value seed keywords that best represent what this website is about.
+             const prompt = `
+         Analyze this website content and generate 6-7 high-value seed keywords for PROGRAMMATIC SEO. 
+         Think about keywords that can be scaled to create THOUSANDS of SEO pages.
 
-        Website Content:
-        Title: ${websiteContent.title}
-        Meta Description: ${websiteContent.metaDescription}
-        Main Headings: ${websiteContent.headings.join(', ')}
-        Content Preview: ${websiteContent.fullText.substring(0, 1500)}
+         Website Content:
+         Title: ${websiteContent.title}
+         Meta Description: ${websiteContent.metaDescription}
+         Main Headings: ${websiteContent.headings.join(', ')}
+         Content Preview: ${websiteContent.fullText.substring(0, 1500)}
 
-        Return a JSON object with this structure:
-        {
-          "websiteAnalysis": {
-            "primaryNiche": "main business/topic category",
-            "businessType": "service/product/blog/ecommerce/etc",
-            "targetAudience": "who this website serves",
-            "mainTopics": ["topic1", "topic2", "topic3"]
-          },
-          "seedKeywords": [
-            {
-              "keyword": "primary keyword phrase",
-              "relevance": "high|medium|low",
-              "intent": "commercial|informational|transactional|navigational",
-              "priority": 1-7,
-              "rationale": "why this keyword is important for this website"
-            }
-          ]
-        }
+         Return a JSON object with this structure:
+         {
+           "websiteAnalysis": {
+             "primaryNiche": "main business/topic category",
+             "businessType": "service/product/blog/ecommerce/etc",
+             "targetAudience": "who this website serves",
+             "mainTopics": ["topic1", "topic2", "topic3"],
+             "programmaticSEOPotential": "how many pages could be created"
+           },
+           "seedKeywords": [
+             {
+               "keyword": "scalable keyword phrase for programmatic SEO",
+               "relevance": "high|medium|low",
+               "intent": "commercial|informational|transactional|navigational",
+               "priority": 1-7,
+               "rationale": "why this keyword can generate hundreds of pages",
+               "scalabilityPotential": "how many pages this keyword could create"
+             }
+           ]
+         }
 
-        Focus on:
-        - Keywords that match the actual business/website purpose
-        - High commercial intent keywords
-        - Long-tail variations that are specific to the niche
-        - Keywords with different search intents
-        - Industry-specific terminology used on the site
-      `;
+         Focus on PROGRAMMATIC SEO opportunities:
+         - Keywords that can be templated for hundreds of variations
+         - Location-based keywords (city + service combinations)
+         - Product/service category combinations
+         - "Best X for Y" type scalable patterns
+         - Industry + use case combinations
+         - Keywords that support bulk content generation
+       `;
 
       const result = await this.geminiService.model.generateContent(prompt);
       const response = await result.response;
