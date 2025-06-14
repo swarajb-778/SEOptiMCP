@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Bot, Zap, TrendingUp, FileText } from 'lucide-react'
+import { Bot, Zap, TrendingUp, FileText, Settings } from 'lucide-react'
 import KeywordDiscovery from './components/KeywordDiscovery'
 import ContentGenerator from './components/ContentGenerator'
+import APIStatusDashboard from './components/APIStatusDashboard'
 import keywordService from './services/keywordService'
 
 function App() {
@@ -68,23 +69,23 @@ function App() {
                 Generate Thousands of SEO Pages
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-                Enter a seed keyword and watch our AI agents discover keyword opportunities, 
-                analyze competitors, and generate content strategies for programmatic SEO.
+                Analyze your website and discover hundreds of keyword opportunities to create 
+                a programmatic SEO strategy that generates thousands of targeted landing pages.
               </p>
               
               {/* Feature Pills */}
               <div className="flex flex-wrap justify-center gap-4 mb-8">
                 <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border">
                   <TrendingUp className="w-4 h-4 text-blue-500" />
-                  <span className="text-sm font-medium text-gray-700">Keyword Research</span>
+                  <span className="text-sm font-medium text-gray-700">Discover 100+ Keywords</span>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border">
                   <Zap className="w-4 h-4 text-indigo-500" />
-                  <span className="text-sm font-medium text-gray-700">AI Content Generation</span>
+                  <span className="text-sm font-medium text-gray-700">Bulk Content Strategy</span>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border">
                   <Bot className="w-4 h-4 text-purple-500" />
-                  <span className="text-sm font-medium text-gray-700">MCP Integration</span>
+                  <span className="text-sm font-medium text-gray-700">Programmatic SEO</span>
                 </div>
               </div>
             </div>
@@ -114,6 +115,17 @@ function App() {
                   <FileText className="w-4 h-4 inline mr-2" />
                   AI Content Generator
                 </button>
+                <button
+                  onClick={() => setActiveTab('status')}
+                  className={`px-6 py-2 rounded-md transition-colors ${
+                    activeTab === 'status'
+                      ? 'bg-green-500 text-white'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Settings className="w-4 h-4 inline mr-2" />
+                  API Status
+                </button>
               </div>
             </div>
 
@@ -121,12 +133,13 @@ function App() {
             <div className="mb-12">
               {activeTab === 'keywords' && <KeywordDiscovery />}
               {activeTab === 'content' && <ContentGenerator />}
+              {activeTab === 'status' && <APIStatusDashboard />}
             </div>
 
             {/* Footer Info */}
             <div className="text-center py-8 border-t border-gray-200">
               <p className="text-gray-500 text-sm">
-                Powered by DataForSEO and Perplexity MCP servers • Built for marketers
+                Powered by Google Gemini AI • Designed for Programmatic SEO at Scale
               </p>
             </div>
           </>
