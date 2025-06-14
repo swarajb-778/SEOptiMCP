@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Bot, Zap, TrendingUp } from 'lucide-react'
+import { Bot, Zap, TrendingUp, FileText } from 'lucide-react'
 import KeywordDiscovery from './components/KeywordDiscovery'
+import ContentGenerator from './components/ContentGenerator'
 import keywordService from './services/keywordService'
 
 function App() {
   const [servicesReady, setServicesReady] = useState(false)
   const [isInitializing, setIsInitializing] = useState(true)
+  const [activeTab, setActiveTab] = useState('keywords')
 
   useEffect(() => {
     const initializeServices = async () => {
@@ -87,9 +89,38 @@ function App() {
               </div>
             </div>
 
-            {/* Keyword Discovery Component */}
+            {/* Navigation Tabs */}
+            <div className="flex justify-center mb-8">
+              <div className="flex bg-white rounded-lg p-1 shadow-sm border">
+                <button
+                  onClick={() => setActiveTab('keywords')}
+                  className={`px-6 py-2 rounded-md transition-colors ${
+                    activeTab === 'keywords'
+                      ? 'bg-blue-500 text-white'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <TrendingUp className="w-4 h-4 inline mr-2" />
+                  Keyword Research
+                </button>
+                <button
+                  onClick={() => setActiveTab('content')}
+                  className={`px-6 py-2 rounded-md transition-colors ${
+                    activeTab === 'content'
+                      ? 'bg-purple-500 text-white'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <FileText className="w-4 h-4 inline mr-2" />
+                  AI Content Generator
+                </button>
+              </div>
+            </div>
+
+            {/* Tab Content */}
             <div className="mb-12">
-              <KeywordDiscovery />
+              {activeTab === 'keywords' && <KeywordDiscovery />}
+              {activeTab === 'content' && <ContentGenerator />}
             </div>
 
             {/* Footer Info */}
