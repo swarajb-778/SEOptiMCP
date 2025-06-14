@@ -1,25 +1,32 @@
-import mcpClient from './mcpClient'
-import geminiService from './geminiService'
+import enhancedMcpClient from './enhancedMcpClient'
+import apiTester from './apiTester'
 
 class KeywordService {
   constructor() {
-    this.client = mcpClient
-    this.geminiService = geminiService
+    this.client = enhancedMcpClient
+    this.apiTester = apiTester
   }
 
   async initializeServices() {
     try {
-      // Initialize both MCP client and Gemini service
-      await this.client.connect()
-      const geminiReady = this.geminiService.isInitialized()
+      console.log('🚀 Initializing enhanced keyword services...')
       
-      if (!geminiReady) {
-        console.warn('Gemini AI service not initialized - check API key')
+      // Test all APIs first
+      const testResults = await this.apiTester.testAllAPIs()
+      console.log('📊 API Test Results:', testResults.summary)
+      
+      // Connect enhanced MCP client
+      const connected = await this.client.connect()
+      
+      if (connected) {
+        console.log('✅ Enhanced keyword services initialized successfully')
+      } else {
+        console.warn('⚠️ Services initialized with limited functionality')
       }
       
-      return true // Return true even if Gemini fails, MCP can work independently
+      return connected
     } catch (error) {
-      console.error('Failed to initialize services:', error)
+      console.error('❌ Failed to initialize services:', error)
       return false
     }
   }
