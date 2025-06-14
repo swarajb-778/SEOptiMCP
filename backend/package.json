@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.54.0",
+    "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "axios": "^1.10.0",
     "cheerio": "^1.0.0",
@@ -46,4 +47,4 @@
   ],
   "author": "MCP Hackathon Team",
   "license": "MIT"
-} 
+}
