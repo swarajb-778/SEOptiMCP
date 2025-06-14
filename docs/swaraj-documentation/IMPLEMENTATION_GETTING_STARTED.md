@@ -1,10 +1,10 @@
 # 🚀 Getting Started - AI-Driven SEO Automation Platform
 
-## 📋 Immediate Action Items (Next 7 Days)
+## ⚡ Rapid Development Guide (5-6 Hours Total)
 
-### Day 1-2: API Access & Credentials Setup
+### STEP 1: Quick API Setup (30 minutes)
 
-**Priority: 🔴 CRITICAL**
+**Priority: 🔴 CRITICAL - Do this first!**
 
 #### 1. Google Gemini API Setup
 ```bash
@@ -58,7 +58,7 @@
 - Hosting (10 GB storage, 1 GB transfer/month)
 - **Cost:** FREE (Spark Plan sufficient for starting)
 
-### Day 2-3: Development Environment Setup
+### STEP 2: Development Environment Setup (20 minutes)
 
 #### 1. Install Required Tools
 ```bash
@@ -129,9 +129,9 @@ pnpm add recharts framer-motion react-hook-form zod
 pnpm add -D @types/node tailwindcss postcss autoprefixer
 ```
 
-### Day 3-4: MCP Server Setup
+### STEP 3: MCP Server Setup (1 hour)
 
-#### 1. Google Gemini MCP Server (FREE)
+#### 1. Google Gemini MCP Server (FREE) - Skip detailed setup, use existing project structure
 ```bash
 cd backend/mcp-servers/gemini-server
 
