@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Extraction Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .result { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffe6e6; border: 1px solid #ff9999; }
+        .success { background: #e6ffe6; border: 1px solid #99ff99; }
+        button { background: #007cba; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #005a87; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>Website Analyzer Test</h1>
+    <p>This page tests if the keyword extraction is working correctly.</p>
+    
+    <div>
+        <label for="url">Website URL:</label>
+        <input type="text" id="url" value="https://tripledart.com" style="width: 300px; padding: 5px;">
+        <button onclick="testAnalyzer()">Test Analyzer</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <script type="module">
+        // Import the websiteAnalyzer (this will only work if served from the same origin)
+        async function testAnalyzer() {
+            const resultsDiv = document.getElementById('results');
+            const url = document.getElementById('url').value;
+            
+            resultsDiv.innerHTML = '<div class="result">Testing website analyzer...</div>';
+            
+            try {
+                // This is a simplified test - in the actual app, we'd import the service
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                const result = await response.json();
+                
+                resultsDiv.innerHTML = `
+                    <div class="result success">
+                        <h3>✅ Analysis Successful!</h3>
+                        <p><strong>Keywords found:</strong> ${result.seedKeywords ? result.seedKeywords.length : 0}</p>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Test Failed</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p><strong>Note:</strong> This test requires the backend API to be running.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Make testAnalyzer available globally
+        window.testAnalyzer = testAnalyzer;
+    </script>
+    
+    <div style="margin-top: 30px; padding: 15px; background: #f0f8ff; border-radius: 5px;">
+        <h3>Manual Testing Instructions:</h3>
+        <ol>
+            <li>Open your browser and go to <code>http://localhost:5173</code></li>
+            <li>Click on the "Keyword Research" tab</li>
+            <li>Enter a website URL (e.g., "https://tripledart.com")</li>
+            <li>Click "Analyze Website"</li>
+            <li>Check the browser console (F12) for debug messages</li>
+            <li>Look for the debug info box that shows keyword count and structure</li>
+        </ol>
+        
+        <h3>Expected Behavior:</h3>
+        <ul>
+            <li>Debug info should show seedKeywords length > 0</li>
+            <li>Keywords should appear as selectable cards</li>
+            <li>Each keyword should have commercial intent data</li>
+            <li>You should be able to select keywords and generate a plan</li>
+        </ul>
+        
+        <h3>If No Keywords Appear:</h3>
+        <ul>
+            <li>Check browser console for error messages</li>
+            <li>Look for Gemini API errors or JSON parsing issues</li>
+            <li>Try the "Retry Analysis" button if it appears</li>
+            <li>Verify the VITE_GOOGLE_GEMINI_API_KEY is set correctly</li>
+        </ul>
+    </div>
+</body>
+</html> 
