@@ -1,74 +1,109 @@
-# React + Vite
+# SEOptiMCP
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**SEO Optimization Platform with MCP Integration**
 
-Currently, two official plugins are available:
+An advanced SEO analysis and automation tool that combines the power of Model Context Protocol (MCP) with comprehensive SEO workflows.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## Expanding the ESLint configuration
+- **Complete React frontend** with Google Gemini integration
+- **Express backend infrastructure** with Firebase integration
+- **MCP server architecture** for extensible integrations
+- **8-step SEO analysis workflow**
+- **Keyword discovery and analysis**
+- **Website content optimization**
+- **Real-time API status monitoring**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🏗️ Architecture
 
---- 
+This project implements a modern SEO automation platform with:
 
- 🎯 The Main App: AI SEO Agent
+- **Frontend**: React.js with modern UI components
+- **Backend**: Express.js with Firebase Admin SDK
+- **AI Integration**: Google Gemini API for content analysis
+- **MCP Servers**: Prepared for DataForSEO, Perplexity, and Claude integrations
+- **Database**: Firestore for data persistence
+- **Hosting**: Firebase Hosting ready
 
-  A tool that helps marketers create lots of SEO content pages automatically. Think of it like
-  having an AI assistant that can take one keyword and turn it into hundreds of content ideas.
+## 📦 Project Structure
 
-  🔧 What We Fixed First
+```
+SEOptiMCP/
+├── frontend/           # React frontend application
+├── backend/           # Express backend server
+├── mcp-servers/       # MCP server implementations
+├── docs/              # Project documentation
+└── firebase/          # Firebase configuration
+```
 
-  - Tailwind CSS: The styling system wasn't working - we fixed all the configuration errors so
-  the app looks good
+## 🛠️ Getting Started
 
-  🎨 The User Interface
+### Prerequisites
 
-  - Clean, professional design with blue gradients and card layouts
-  - Header with AI bot icon and status indicators
-  - Main form where you type in a keyword (like "AI tools")
-  - Results display that shows keyword clusters with metrics
+- Node.js 18+ 
+- npm or yarn
+- Firebase CLI
+- Google Gemini API key
 
-  ⚙️ The Smart Parts (Components)
+### Installation
 
-  1. KeywordDiscovery Component
-    - Has an input box for your seed keyword
-    - Shows a "Discover Keywords" button
-    - Displays results in organized clusters
-    - Shows search volume, difficulty, and opportunity level
-  2. ProgressIndicator Component
-    - Shows 5 steps of AI processing with animations
-    - Has a progress bar that fills up
-    - Makes it feel like real AI is working
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/swarajb-778/SEOptiMCP.git
+   cd SEOptiMCP
+   ```
 
-  🤖 The Behind-the-Scenes Services
+2. **Install dependencies**
+   ```bash
+   # Frontend
+   cd frontend && npm install
+   
+   # Backend
+   cd ../backend && npm install
+   ```
 
-  1. Mock MCP Client (mcpClient.js)
-    - Pretends to connect to real SEO data services
-    - Simulates getting search volumes and keyword suggestions
-    - Will be replaced with real APIs later
-  2. Keyword Service (keywordService.js)
-    - Takes your seed keyword and generates related keywords
-    - Groups them into themes (tools, guides, comparisons, etc.)
-    - Calculates which ones are good opportunities
+3. **Set up environment variables**
+   ```bash
+   # Create .env files in both frontend and backend directories
+   # Add your Google Gemini API key and Firebase configuration
+   ```
 
-  🚀 How It Works
+4. **Start the development servers**
+   ```bash
+   # Frontend (in one terminal)
+   cd frontend && npm start
+   
+   # Backend (in another terminal)
+   cd backend && npm run dev
+   ```
 
-  1. You type "AI tools"
-  2. The app shows a progress animation
-  3. It generates clusters like:
-    - "AI Tools & Software" (12,500 searches/month)
-    - "AI Tools Guide" (8,900 searches/month)
-    - "AI Tools Comparison" (6,200 searches/month)
-  4. Each cluster shows difficulty and opportunity ratings
+## 🔧 Development
 
-  💡 The Big Picture
+### Branches
 
-  Instead of manually researching keywords for hours, a marketer can now:
-  - Enter one keyword
-  - Get hundreds of related keywords automatically
-  - See which ones are worth targeting
-  - Have a roadmap for creating lots of SEO content
+- **main**: Primary development branch (cleaned production-ready code)
+- **main-backup**: Original main branch content
+- **swaraj-seo-automation-docs**: Documentation and planning branch
 
-  It's like having a research assistant that works in seconds instead of hours!
+### Contributing
+
+This is a personal project, but feel free to explore the code and learn from the implementation.
+
+## 📋 Current Status
+
+✅ **Phase 1 Complete**: Frontend and backend infrastructure
+🔄 **Phase 2 In Progress**: MCP server implementations
+📅 **Phase 3 Planned**: Advanced SEO features and analytics
+
+## 🔗 Links
+
+- [Repository](https://github.com/swarajb-778/SEOptiMCP)
+- [Issues](https://github.com/swarajb-778/SEOptiMCP/issues)
+
+## 📄 License
+
+This project is private and owned by swarajb-778.
+
+---
+
+**Note**: This repository was migrated from a collaborative project to maintain independent development control.
