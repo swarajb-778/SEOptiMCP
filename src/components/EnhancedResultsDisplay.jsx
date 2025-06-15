@@ -1,5 +1,14 @@
 import { useState } from 'react'
 import { Brain, Target, TrendingUp, Users, BarChart3, Calendar, FileText, Download, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react'
+import { 
+  SEOScoreGauge, 
+  KeywordDifficultyChart, 
+  SearchVolumeChart, 
+  CompetitionChart, 
+  ROIProjectionChart, 
+  SEOProgressMeters, 
+  KeywordCategoriesChart 
+} from './SEOCharts'
 
 const EnhancedResultsDisplay = ({ keywordAnalysis, competitionData, masterStrategy }) => {
   const [activeTab, setActiveTab] = useState('overview')
@@ -91,6 +100,26 @@ const EnhancedResultsDisplay = ({ keywordAnalysis, competitionData, masterStrate
           {/* Overview Tab */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
+              {/* SEO Score and Progress */}
+              <div className="grid md:grid-cols-3 gap-6">
+                <SEOScoreGauge 
+                  score={masterStrategy?.executiveSummary?.currentScore || 0} 
+                  title="Current SEO Score" 
+                />
+                <div className="md:col-span-2">
+                  <SEOProgressMeters 
+                    keywordAnalysis={keywordAnalysis}
+                    masterStrategy={masterStrategy}
+                  />
+                </div>
+              </div>
+
+              {/* Charts Row */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <KeywordCategoriesChart keywords={keywordAnalysis?.expandedKeywords} />
+                <ROIProjectionChart masterStrategy={masterStrategy} />
+              </div>
+
               {/* Executive Summary */}
               {masterStrategy?.executiveSummary && (
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
@@ -169,12 +198,18 @@ const EnhancedResultsDisplay = ({ keywordAnalysis, competitionData, masterStrate
 
           {/* Keywords Tab */}
           {activeTab === 'keywords' && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <h4 className="text-lg font-semibold text-gray-900">Expanded Keyword Analysis</h4>
                 <span className="text-sm text-gray-500">
                   {keywordAnalysis?.expandedKeywords?.length || 0} keywords found
                 </span>
+              </div>
+
+              {/* Keyword Analytics Charts */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <KeywordDifficultyChart keywords={keywordAnalysis?.expandedKeywords} />
+                <SearchVolumeChart keywords={keywordAnalysis?.expandedKeywords} />
               </div>
               
               {/* Keyword Categories */}
@@ -235,6 +270,9 @@ const EnhancedResultsDisplay = ({ keywordAnalysis, competitionData, masterStrate
           {activeTab === 'competition' && competitionData && (
             <div className="space-y-6">
               <h4 className="text-lg font-semibold text-gray-900">Competitive Analysis</h4>
+              
+              {/* Competition Chart */}
+              <CompetitionChart competitionData={competitionData} />
               
               {/* Overall Insights */}
               {competitionData.overallInsights && (
