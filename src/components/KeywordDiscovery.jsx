@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { Search, TrendingUp, Target, Globe, ExternalLink, CheckCircle, ArrowRight, FileText, Code, Download, Database } from 'lucide-react'
+import { Search, TrendingUp, Target, Globe, ExternalLink, CheckCircle, ArrowRight, FileText, Code, Download, Database, Brain, Zap, BarChart3, Users } from 'lucide-react'
 import ProgressIndicator from './ProgressIndicator'
+import EnhancedResultsDisplay from './EnhancedResultsDisplay'
 import websiteAnalyzer from '../services/websiteAnalyzer'
 import { geminiService } from '../services/geminiService'
+import { geminiKeywordService } from '../services/geminiKeywordService'
 import { seoPageGenerator } from '../services/seoPageGenerator'
 import { featureformMCP } from '../services/featureformMCP'
 
@@ -12,11 +14,16 @@ const KeywordDiscovery = () => {
   const [websiteContent, setWebsiteContent] = useState(null)
   const [seedKeywords, setSeedKeywords] = useState([])
   
-  // Step 2: Keyword Selection
+  // Step 2: Enhanced Keyword Research
+  const [expandedKeywords, setExpandedKeywords] = useState([])
   const [selectedKeywords, setSelectedKeywords] = useState([])
+  const [keywordAnalysis, setKeywordAnalysis] = useState(null)
   
-  // Step 3: Results
-  const [keywordReport, setKeywordReport] = useState(null)
+  // Step 3: Competition Analysis
+  const [competitionData, setCompetitionData] = useState(null)
+  
+  // Step 4: Master Strategy
+  const [masterStrategy, setMasterStrategy] = useState(null)
   const [seoAnalysis, setSeoAnalysis] = useState(null)
   
   // UI States
@@ -24,6 +31,7 @@ const KeywordDiscovery = () => {
   const [isProcessing, setIsProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState(null)
+  const [processingStep, setProcessingStep] = useState('')
 
   // Step 1: Analyze Website
   const handleAnalyzeWebsite = async (e) => {
@@ -74,60 +82,135 @@ const KeywordDiscovery = () => {
     }
   }
 
-  // Step 2: Generate Keyword Report
-  const handleKeywordSelection = async () => {
+  // Step 2: Enhanced Keyword Research
+  const handleEnhancedKeywordResearch = async () => {
+    if (seedKeywords.length === 0) return
+
+    setIsProcessing(true)
+    setProgress(0)
+    setError(null)
+    setProcessingStep('Expanding keywords with AI...')
+
+    try {
+      // Step 1: Expand keywords using advanced Gemini prompting
+      setProgress(20)
+      console.log('🔍 Starting enhanced keyword research with:', seedKeywords)
+      
+      const keywordData = await geminiKeywordService.expandKeywords(
+        seedKeywords,
+        websiteContent?.websiteAnalysis || {}
+      )
+      
+      console.log('✅ Keyword expansion completed:', keywordData)
+      setExpandedKeywords(keywordData.expandedKeywords || [])
+      setKeywordAnalysis(keywordData)
+      
+      // Step 2: Analyze competition
+      setProgress(50)
+      setProcessingStep('Analyzing competition with AI...')
+      
+      const topKeywords = keywordData.expandedKeywords?.slice(0, 10).map(k => k.keyword) || seedKeywords
+      const competitionAnalysis = await geminiKeywordService.analyzeCompetition(
+        topKeywords,
+        websiteContent?.websiteAnalysis || {}
+      )
+      
+      console.log('✅ Competition analysis completed:', competitionAnalysis)
+      setCompetitionData(competitionAnalysis)
+      
+      // Step 3: Create master strategy
+      setProgress(80)
+      setProcessingStep('Creating comprehensive SEO strategy...')
+      
+      const strategy = await geminiKeywordService.createMasterStrategy(
+        keywordData,
+        competitionAnalysis,
+        websiteContent?.websiteAnalysis || {}
+      )
+      
+      console.log('✅ Master strategy created:', strategy)
+      setMasterStrategy(strategy)
+      
+      setProgress(100)
+      setCurrentStep(2)
+      setProcessingStep('Analysis complete!')
+      
+    } catch (err) {
+      console.error('Enhanced keyword research failed:', err)
+      setError(err.message)
+    } finally {
+      setIsProcessing(false)
+      setProgress(0)
+      setProcessingStep('')
+    }
+  }
+
+  // Step 3: Generate Final SEO Plan
+  const handleGenerateFinalPlan = async () => {
     if (selectedKeywords.length === 0) return
 
     setIsProcessing(true)
     setProgress(0)
     setError(null)
+    setProcessingStep('Generating final SEO implementation plan...')
 
     try {
-      // Generate SEO pages using the new SEO page generator
+      // Generate SEO pages using the selected keywords
       setProgress(30)
       const seoPages = await seoPageGenerator.generateSEOPages(
         websiteContent?.websiteAnalysis || {},
         selectedKeywords
       )
       
-      // Store SEO pages and keywords in MCP
+      // Store data in MCP
       if (websiteContent?.websiteId) {
         featureformMCP.storeSEOPages(websiteContent.websiteId, seoPages)
         featureformMCP.storeKeywordData(websiteContent.websiteId, selectedKeywords)
       }
       
-      // Generate master plan
+      // Generate implementation guide
       setProgress(70)
-      const masterPlan = await geminiService.generateProgrammaticSEOPlan(
+      const implementationGuide = await geminiService.generateProgrammaticSEOPlan(
         websiteContent?.websiteAnalysis || {},
         selectedKeywords
       )
       
-      // Format the analysis for display
-      const analysis = {
-        analysis: masterPlan,
+      // Combine all analysis data
+      const finalAnalysis = {
+        // Previous analysis data
+        keywordAnalysis: keywordAnalysis,
+        competitionData: competitionData,
+        masterStrategy: masterStrategy,
+        
+        // New implementation data
         seoPages: seoPages,
+        implementationGuide: implementationGuide,
         selectedKeywords: selectedKeywords,
         websiteAnalysis: websiteContent?.websiteAnalysis,
         websiteId: websiteContent?.websiteId
       }
-      setSeoAnalysis(analysis)
       
+      setSeoAnalysis(finalAnalysis)
       setProgress(100)
       setCurrentStep(3)
+      setProcessingStep('Implementation plan ready!')
+      
     } catch (err) {
+      console.error('Final plan generation failed:', err)
       setError(err.message)
     } finally {
       setIsProcessing(false)
       setProgress(0)
+      setProcessingStep('')
     }
   }
 
   const toggleKeywordSelection = (keyword) => {
+    const keywordText = typeof keyword === 'string' ? keyword : keyword.keyword
     setSelectedKeywords(prev => 
-      prev.includes(keyword.keyword) 
-        ? prev.filter(k => k !== keyword.keyword)
-        : [...prev, keyword.keyword]
+      prev.includes(keywordText) 
+        ? prev.filter(k => k !== keywordText)
+        : [...prev, keywordText]
     )
   }
 
@@ -136,10 +219,14 @@ const KeywordDiscovery = () => {
     setWebsiteUrl('')
     setWebsiteContent(null)
     setSeedKeywords([])
+    setExpandedKeywords([])
     setSelectedKeywords([])
-    setKeywordReport(null)
+    setKeywordAnalysis(null)
+    setCompetitionData(null)
+    setMasterStrategy(null)
     setSeoAnalysis(null)
     setError(null)
+    setProcessingStep('')
   }
 
   const downloadImplementationCode = (seoPages) => {
@@ -223,33 +310,40 @@ const KeywordDiscovery = () => {
       {/* Progress Steps */}
       <div className="card">
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className={`flex items-center gap-2 ${currentStep >= 1 ? 'text-blue-600' : 'text-gray-400'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
                 {currentStep > 1 ? <CheckCircle className="w-5 h-5" /> : '1'}
               </div>
-                             <span className="font-medium">Website Analysis</span>
+              <span className="font-medium text-sm">Website Analysis</span>
             </div>
             <ArrowRight className="w-4 h-4 text-gray-400" />
             <div className={`flex items-center gap-2 ${currentStep >= 2 ? 'text-blue-600' : 'text-gray-400'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
                 {currentStep > 2 ? <CheckCircle className="w-5 h-5" /> : '2'}
               </div>
-              <span className="font-medium">Keyword Selection</span>
+              <span className="font-medium text-sm">AI Analysis</span>
             </div>
             <ArrowRight className="w-4 h-4 text-gray-400" />
             <div className={`flex items-center gap-2 ${currentStep >= 3 ? 'text-blue-600' : 'text-gray-400'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}>
                 {currentStep >= 3 ? <CheckCircle className="w-5 h-5" /> : '3'}
               </div>
-              <span className="font-medium">SEO Analysis</span>
+              <span className="font-medium text-sm">Implementation</span>
             </div>
           </div>
-          {currentStep > 1 && (
-            <button onClick={resetProcess} className="btn-secondary">
-              Start Over
-            </button>
-          )}
+          <div className="flex items-center gap-4">
+            {(currentStep === 2 && keywordAnalysis) && (
+              <div className="text-sm text-green-600 font-medium">
+                ✅ {keywordAnalysis.summary?.totalKeywords || 0} keywords analyzed
+              </div>
+            )}
+            {currentStep > 1 && (
+              <button onClick={resetProcess} className="btn-secondary">
+                Start Over
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -458,17 +552,7 @@ const KeywordDiscovery = () => {
               </div>
             </div>
 
-            {/* Debug Information */}
-            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm">
-              <strong>Debug Info:</strong> 
-              <div>seedKeywords length: {seedKeywords.length}</div>
-              <div>seedKeywords type: {Array.isArray(seedKeywords) ? 'Array' : typeof seedKeywords}</div>
-              <div>isProcessing: {isProcessing.toString()}</div>
-              <div>websiteContent exists: {websiteContent ? 'Yes' : 'No'}</div>
-              {seedKeywords.length > 0 && (
-                <div>First keyword: {JSON.stringify(seedKeywords[0], null, 2)}</div>
-              )}
-            </div>
+
 
             {seedKeywords.length === 0 && !isProcessing && websiteContent && (
               <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
@@ -592,20 +676,40 @@ const KeywordDiscovery = () => {
               ))}
             </div>
 
-            <button
-              onClick={handleKeywordSelection}
-              disabled={selectedKeywords.length === 0 || isProcessing}
-              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isProcessing ? 'Creating Programmatic SEO Plan...' : `Generate Master Plan (${selectedKeywords.length} keywords)`}
-            </button>
+            <div className="space-y-4">
+              <button
+                onClick={handleEnhancedKeywordResearch}
+                disabled={isProcessing}
+                className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isProcessing ? 'AI is analyzing...' : '🚀 Start Enhanced AI Analysis (50+ Keywords + Strategy)'}
+              </button>
+              
+              <div className="text-center text-sm text-gray-500">
+                Or select keywords manually and generate a basic plan:
+              </div>
+              
+              <button
+                onClick={handleGenerateFinalPlan}
+                disabled={selectedKeywords.length === 0 || isProcessing}
+                className="btn-secondary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isProcessing ? 'Creating Plan...' : `Generate Basic Plan (${selectedKeywords.length} keywords)`}
+              </button>
+            </div>
 
             {isProcessing && (
               <div className="mt-6">
                 <ProgressIndicator progress={progress} />
                 <p className="text-center text-sm text-gray-600 mt-2">
-                  Creating your programmatic SEO strategy to generate thousands of pages...
+                  {processingStep || 'Processing your SEO analysis...'}
                 </p>
+                <div className="mt-3 text-center">
+                  {progress < 30 && <span className="text-xs text-blue-600">🔍 Expanding keywords with AI...</span>}
+                  {progress >= 30 && progress < 60 && <span className="text-xs text-purple-600">⚔️ Analyzing competition...</span>}
+                  {progress >= 60 && progress < 90 && <span className="text-xs text-green-600">🎯 Creating master strategy...</span>}
+                  {progress >= 90 && <span className="text-xs text-emerald-600">✅ Finalizing analysis...</span>}
+                </div>
               </div>
             )}
 
@@ -615,6 +719,17 @@ const KeywordDiscovery = () => {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Step 2.5: Enhanced Analysis Results */}
+      {currentStep === 2 && (keywordAnalysis || competitionData || masterStrategy) && (
+        <div className="mt-8">
+          <EnhancedResultsDisplay
+            keywordAnalysis={keywordAnalysis}
+            competitionData={competitionData}
+            masterStrategy={masterStrategy}
+          />
         </div>
       )}
 
@@ -804,6 +919,6 @@ const KeywordDiscovery = () => {
       </div>
     </div>
   )
-}
-
+  }
+  
 export default KeywordDiscovery
