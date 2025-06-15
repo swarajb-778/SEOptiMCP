@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Brain, Target, TrendingUp, Users, BarChart3, Calendar, FileText, Download, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react'
+import { Brain, Target, TrendingUp, Users, BarChart3, Calendar, FileText, Download, ExternalLink, ChevronDown, ChevronUp, Share2 } from 'lucide-react'
 import { 
   SEOScoreGauge, 
   KeywordDifficultyChart, 
@@ -9,10 +9,18 @@ import {
   SEOProgressMeters, 
   KeywordCategoriesChart 
 } from './SEOCharts'
+import { 
+  exportToPDF, 
+  exportKeywordsToCSV, 
+  exportCompetitionToCSV, 
+  exportStrategyToJSON, 
+  exportCompleteAnalysis 
+} from '../utils/exportUtils'
 
 const EnhancedResultsDisplay = ({ keywordAnalysis, competitionData, masterStrategy }) => {
   const [activeTab, setActiveTab] = useState('overview')
   const [expandedSections, setExpandedSections] = useState({})
+  const [isExporting, setIsExporting] = useState(false)
 
   const toggleSection = (section) => {
     setExpandedSections(prev => ({
@@ -21,8 +29,49 @@ const EnhancedResultsDisplay = ({ keywordAnalysis, competitionData, masterStrate
     }))
   }
 
+  // Export handlers
+  const handleExportPDF = async () => {
+    setIsExporting(true)
+    try {
+      await exportToPDF('enhanced-results-display', 'seo-analysis-report')
+      alert('PDF report downloaded successfully!')
+    } catch (error) {
+      alert('Failed to export PDF: ' + error.message)
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
+  const handleExportKeywordsCSV = async () => {
+    setIsExporting(true)
+    try {
+      await exportKeywordsToCSV(keywordAnalysis?.expandedKeywords, 'keyword-analysis')
+      alert('Keywords CSV downloaded successfully!')
+    } catch (error) {
+      alert('Failed to export keywords: ' + error.message)
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
+  const handleExportCompleteAnalysis = async () => {
+    setIsExporting(true)
+    try {
+      await exportCompleteAnalysis({ 
+        keywordAnalysis, 
+        competitionData, 
+        masterStrategy 
+      }, 'complete-seo-analysis')
+      alert('Complete analysis exported successfully!')
+    } catch (error) {
+      alert('Failed to export complete analysis: ' + error.message)
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" id="enhanced-results-display">
       {/* Executive Summary Dashboard */}
       <div className="card">
         <div className="flex items-center gap-3 mb-6">
@@ -386,20 +435,51 @@ const EnhancedResultsDisplay = ({ keywordAnalysis, competitionData, masterStrate
 
       {/* Export Options */}
       <div className="card">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h4 className="text-lg font-semibold text-gray-900">Export Analysis</h4>
             <p className="text-gray-600 text-sm">Download your complete SEO analysis and strategy</p>
           </div>
-          <div className="flex gap-3">
-            <button className="btn-secondary flex items-center gap-2">
+          <div className="flex flex-wrap gap-3">
+            <button 
+              onClick={handleExportPDF}
+              disabled={isExporting}
+              className="btn-secondary flex items-center gap-2 disabled:opacity-50"
+            >
               <Download className="w-4 h-4" />
-              Download PDF
+              {isExporting ? 'Generating...' : 'Download PDF'}
             </button>
-            <button className="btn-secondary flex items-center gap-2">
+            <button 
+              onClick={handleExportKeywordsCSV}
+              disabled={isExporting || !keywordAnalysis?.expandedKeywords?.length}
+              className="btn-secondary flex items-center gap-2 disabled:opacity-50"
+            >
               <FileText className="w-4 h-4" />
-              Export CSV
+              Keywords CSV
             </button>
+            <button 
+              onClick={handleExportCompleteAnalysis}
+              disabled={isExporting}
+              className="btn-primary flex items-center gap-2 disabled:opacity-50"
+            >
+              <Share2 className="w-4 h-4" />
+              Complete Bundle
+            </button>
+          </div>
+        </div>
+        
+        {/* Export Help Text */}
+        <div className="mt-4 text-xs text-gray-500 border-t pt-4">
+          <div className="grid md:grid-cols-3 gap-4">
+            <div>
+              <strong>PDF Report:</strong> Complete visual analysis with charts and insights
+            </div>
+            <div>
+              <strong>Keywords CSV:</strong> Spreadsheet with all keyword data for further analysis
+            </div>
+            <div>
+              <strong>Complete Bundle:</strong> JSON file with all analysis data for developers
+            </div>
           </div>
         </div>
       </div>
