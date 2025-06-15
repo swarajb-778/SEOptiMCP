@@ -3,6 +3,7 @@ import { Bot, Zap, TrendingUp, FileText, Settings } from 'lucide-react'
 import KeywordDiscovery from './components/KeywordDiscovery'
 import ContentGenerator from './components/ContentGenerator'
 import APIStatusDashboard from './components/APIStatusDashboard'
+
 import keywordService from './services/keywordService'
 
 function App() {
@@ -126,6 +127,7 @@ function App() {
                   <Settings className="w-4 h-4 inline mr-2" />
                   API Status
                 </button>
+
               </div>
             </div>
 
