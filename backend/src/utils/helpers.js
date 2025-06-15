@@ -20,7 +20,7 @@ export const extractDomain = (url) => {
   try {
     const parsed = urlParse(url);
     return parsed.hostname;
-  } catch (error) {
+  } catch {
     throw new Error('Invalid URL format');
   }
 };
@@ -30,7 +30,7 @@ export const isValidUrl = (url) => {
   try {
     const parsed = urlParse(url);
     return parsed.protocol && parsed.hostname && (parsed.protocol === 'http:' || parsed.protocol === 'https:');
-  } catch (error) {
+  } catch {
     return false;
   }
 };
@@ -150,7 +150,7 @@ export const getFileExtension = (url) => {
     const parsed = urlParse(url);
     const pathname = parsed.pathname;
     return pathname.split('.').pop().toLowerCase();
-  } catch (error) {
+  } catch {
     return '';
   }
 }; 

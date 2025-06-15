@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "AI-Driven SEO Analysis Platform Backend",
   "type": "module",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.54.0",
+    "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "@modelcontextprotocol/sdk": "^1.0.0",
     "axios": "^1.10.0",
     "cheerio": "^1.0.0",
@@ -22,6 +23,7 @@
     "express-rate-limit": "^7.4.1",
     "express-validator": "^7.2.0",
     "firebase-admin": "^13.0.1",
+    "firebase-functions": "^6.3.2",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "node-cache": "^5.1.2",
@@ -46,4 +48,4 @@
   ],
   "author": "MCP Hackathon Team",
   "license": "MIT"
-} 
+}

@@ -27,7 +27,7 @@ export const asyncHandler = (fn) => {
 };
 
 // Global error handler middleware
-export const errorHandler = (err, req, res, next) => {
+export const errorHandler = (err, req, res, _next) => {
   let error = { ...err };
   error.message = err.message;
 

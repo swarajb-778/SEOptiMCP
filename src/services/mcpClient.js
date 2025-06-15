@@ -128,7 +128,7 @@ class MockMCPClient {
     return ideas
   }
 
-  async optimizeContent(content, targetKeywords) {
+  async optimizeContent(content, _targetKeywords) {
     if (!this.servers.perplexity.connected) {
       throw new Error('Perplexity server not connected')
     }

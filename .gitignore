@@ -12,13 +12,11 @@ dist
 dist-ssr
 *.local
 
-# Environment variables
-.env
+# Environment variables (keeping .env files in repo for easier setup)
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-backend/.env
 backend/.env.local
 
 # Firebase
@@ -51,3 +49,4 @@ Icon?
 *.swp
 *.swo
 *~
+.env

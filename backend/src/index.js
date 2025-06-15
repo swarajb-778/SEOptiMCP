@@ -89,7 +89,12 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes (to be implemented in Phase 2)
+// Import routes
+import analysisRoutes from './routes/analysis.js';
+
+// API routes
+app.use('/api/analysis', analysisRoutes);
+
 app.get('/api', (req, res) => {
   res.json({
     message: 'AI-Driven SEO Analysis Platform API',
@@ -97,9 +102,12 @@ app.get('/api', (req, res) => {
     status: 'ready',
     endpoints: {
       health: '/health',
-      analysis: '/api/analysis (coming soon)',
-      keywords: '/api/keywords (coming soon)',
-      strategy: '/api/strategy (coming soon)',
+      analysis: '/api/analysis',
+      analysisHealth: '/api/analysis/health',
+      startAnalysis: 'POST /api/analysis/start',
+      keywords: 'POST /api/analysis/keywords',
+      suggestions: 'GET /api/analysis/suggestions/:keyword',
+      serp: 'GET /api/analysis/serp/:keyword',
     },
   });
 });
@@ -114,7 +122,7 @@ app.use('*', (req, res) => {
 });
 
 // Global error handler
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   logger.error('Unhandled error:', {
     error: err.message,
     stack: err.stack,

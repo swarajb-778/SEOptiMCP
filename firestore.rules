@@ -1,0 +1,26 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read/write access to analysis results for authenticated users
+    match /analyses/{analysisId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow read access to public analysis results
+    match /public_analyses/{analysisId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // User data access
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Rate limiting and usage tracking
+    match /usage/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
