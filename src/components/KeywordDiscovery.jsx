@@ -36,8 +36,21 @@ const KeywordDiscovery = () => {
     
     try {
       setProgress(50)
+      console.log('🔍 Starting website analysis for:', websiteUrl)
       const content = await websiteAnalyzer.analyzeWebsite(websiteUrl)
+      console.log('📊 Analysis completed, received:', content)
       setWebsiteContent(content)
+      
+      // Extract and set seed keywords from the analysis
+      if (content.seedKeywords && Array.isArray(content.seedKeywords)) {
+        setSeedKeywords(content.seedKeywords)
+        console.log('✅ Extracted seed keywords:', content.seedKeywords)
+        console.log('✅ Number of keywords:', content.seedKeywords.length)
+      } else {
+        console.warn('⚠️ No seed keywords found in analysis result:', content)
+        console.log('Full content structure:', content)
+        setSeedKeywords([])
+      }
       
       // Store in our MCP for persistence
       const websiteId = featureformMCP.storeWebsiteAnalysis(websiteUrl, content.websiteAnalysis)
@@ -45,6 +58,11 @@ const KeywordDiscovery = () => {
         ...content,
         websiteId: websiteId
       })
+      
+      // Show info message about the new analysis method
+      if (content.websiteContent?.isGeminiAnalysis) {
+        console.info('✅ Website analyzed directly by Google Gemini with SEO audit and keyword recommendations.')
+      }
       
       setCurrentStep(2)
       setProgress(100)
@@ -295,26 +313,138 @@ const KeywordDiscovery = () => {
       {/* Step 2: Keyword Selection */}
       {currentStep === 2 && websiteContent && (
         <div className="space-y-6">
-          {/* Website Summary */}
+          {/* Enhanced Website Analysis Summary */}
           <div className="card">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Website Analysis Summary</h3>
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <h4 className="font-medium text-gray-700">Website Title</h4>
-                <p className="text-gray-900">{websiteContent.title}</p>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg">
+                <Globe className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h4 className="font-medium text-gray-700">Content Quality</h4>
-                <p className="text-gray-900">{websiteContent.wordCount} words, {websiteContent.headings.length} headings</p>
+                <h3 className="text-xl font-semibold text-gray-900">Website SEO Audit Results</h3>
+                <p className="text-gray-600">Comprehensive analysis by Google Gemini</p>
               </div>
             </div>
-            {websiteContent.metaDescription && (
+
+            {/* Basic Info */}
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
-                <h4 className="font-medium text-gray-700">Meta Description</h4>
-                <p className="text-gray-600">{websiteContent.metaDescription}</p>
+                <h4 className="font-medium text-gray-700 mb-2">Website Overview</h4>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="text-gray-500">Title:</span>
+                    <span className="ml-2 font-medium">{websiteContent?.websiteAnalysis?.websiteTitle || websiteContent.title}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Business Type:</span>
+                    <span className="ml-2 font-medium capitalize">{websiteContent?.websiteAnalysis?.businessType || 'Website'}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Primary Niche:</span>
+                    <span className="ml-2 font-medium">{websiteContent?.websiteAnalysis?.primaryNiche || 'General'}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Target Audience:</span>
+                    <span className="ml-2 font-medium">{websiteContent?.websiteAnalysis?.targetAudience || 'General audience'}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="font-medium text-gray-700 mb-2">SEO Assessment</h4>
+                <div className="space-y-2 text-sm">
+                  {websiteContent?.websiteAnalysis?.currentSEOStrengths && (
+                    <div>
+                      <span className="text-gray-500">Strengths:</span>
+                      <div className="ml-2 mt-1">
+                        {websiteContent.websiteAnalysis.currentSEOStrengths.map((strength, index) => (
+                          <span key={index} className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                            {strength}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {websiteContent?.websiteAnalysis?.seoWeaknesses && (
+                    <div>
+                      <span className="text-gray-500">Areas to Improve:</span>
+                      <div className="ml-2 mt-1">
+                        {websiteContent.websiteAnalysis.seoWeaknesses.map((weakness, index) => (
+                          <span key={index} className="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                            {weakness}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Main Topics */}
+            {websiteContent?.websiteAnalysis?.mainTopics && (
+              <div className="mb-6">
+                <h4 className="font-medium text-gray-700 mb-2">Main Topics</h4>
+                <div className="flex flex-wrap gap-2">
+                  {websiteContent.websiteAnalysis.mainTopics.map((topic, index) => (
+                    <span key={index} className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Quick Wins */}
+            {websiteContent?.websiteAnalysis?.quickWins && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <h4 className="font-medium text-yellow-800 mb-2">🚀 Quick SEO Wins</h4>
+                <ul className="text-sm text-yellow-700 space-y-1">
+                  {websiteContent.websiteAnalysis.quickWins.map((win, index) => (
+                    <li key={index}>• {win}</li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
+
+          {/* Keyword Ranking Analysis */}
+          {websiteContent?.websiteAnalysis?.keywordRanking && (
+            <div className="card">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg">
+                  <TrendingUp className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Keyword Ranking by Money Intent</h3>
+                  <p className="text-gray-600 text-sm">Keywords ranked by commercial value and conversion potential</p>
+                </div>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <h4 className="font-medium text-green-800 mb-2">🎯 Highest Money Intent</h4>
+                  <p className="text-green-700 text-sm font-medium">
+                    {websiteContent.websiteAnalysis.keywordRanking.highestMoneyIntent}
+                  </p>
+                </div>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <h4 className="font-medium text-blue-800 mb-2">⚡ Quick Wins</h4>
+                  <div className="text-blue-700 text-sm">
+                    {websiteContent.websiteAnalysis.keywordRanking.quickestWins?.map((keyword, index) => (
+                      <span key={index} className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-6">
+                <h4 className="font-medium text-gray-700 mb-2">📊 Ranking Methodology</h4>
+                <p className="text-gray-600 text-sm">{websiteContent.websiteAnalysis.keywordRanking.methodology}</p>
+              </div>
+            </div>
+          )}
 
           {/* Seed Keywords Selection */}
           <div className="card">
@@ -328,21 +458,46 @@ const KeywordDiscovery = () => {
               </div>
             </div>
 
-            <div className="grid gap-3 mb-6">
+            {/* Debug Information */}
+            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm">
+              <strong>Debug Info:</strong> 
+              <div>seedKeywords length: {seedKeywords.length}</div>
+              <div>seedKeywords type: {Array.isArray(seedKeywords) ? 'Array' : typeof seedKeywords}</div>
+              <div>isProcessing: {isProcessing.toString()}</div>
+              <div>websiteContent exists: {websiteContent ? 'Yes' : 'No'}</div>
+              {seedKeywords.length > 0 && (
+                <div>First keyword: {JSON.stringify(seedKeywords[0], null, 2)}</div>
+              )}
+            </div>
+
+            {seedKeywords.length === 0 && !isProcessing && websiteContent && (
+              <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                <p className="text-gray-600 mb-2">No keywords found in the analysis.</p>
+                <p className="text-sm text-gray-500">This might be due to an API issue or parsing error.</p>
+                <button 
+                  onClick={() => handleAnalyzeWebsite({ preventDefault: () => {} })}
+                  className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  Retry Analysis
+                </button>
+              </div>
+            )}
+
+            <div className="grid gap-4 mb-6">
               {seedKeywords.map((keyword, index) => (
                 <div 
                   key={index}
                   onClick={() => toggleKeywordSelection(keyword)}
-                  className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                  className={`border rounded-lg p-5 cursor-pointer transition-all ${
                     selectedKeywords.includes(keyword.keyword)
                       ? 'border-blue-500 bg-blue-50 shadow-md'
                       : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      <div className="flex items-start gap-3">
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-1 ${
                           selectedKeywords.includes(keyword.keyword)
                             ? 'border-blue-500 bg-blue-500'
                             : 'border-gray-300'
@@ -351,21 +506,86 @@ const KeywordDiscovery = () => {
                             <CheckCircle className="w-3 h-3 text-white" />
                           )}
                         </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-900">{keyword.keyword}</h4>
-                          <p className="text-sm text-gray-600">{keyword.rationale}</p>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900 mb-2">{keyword.keyword}</h4>
+                          <p className="text-sm text-gray-600 mb-3">{keyword.rationale}</p>
+                          
+                          {/* Enhanced keyword details */}
+                          <div className="grid grid-cols-2 gap-4 text-xs">
+                            <div>
+                              <span className="text-gray-500">Search Volume:</span>
+                              <span className="ml-1 font-medium">{keyword.monthlySearchVolume || 'N/A'}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Intent:</span>
+                              <span className="ml-1 font-medium capitalize">{keyword.searchIntent || keyword.intent}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Competition:</span>
+                              <span className="ml-1 font-medium capitalize">{keyword.competitionLevel || keyword.difficulty}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Priority:</span>
+                              <span className="ml-1 font-medium">#{keyword.priority}</span>
+                            </div>
+                            {keyword.moneyIntent && (
+                              <div>
+                                <span className="text-gray-500">Money Intent:</span>
+                                <span className={`ml-1 font-medium ${
+                                  keyword.moneyIntent >= 80 ? 'text-green-600' :
+                                  keyword.moneyIntent >= 60 ? 'text-yellow-600' :
+                                  'text-red-600'
+                                }`}>
+                                  {keyword.moneyIntent}%
+                                </span>
+                              </div>
+                            )}
+                            {keyword.commercialValue && (
+                              <div>
+                                <span className="text-gray-500">Commercial Value:</span>
+                                <span className={`ml-1 font-medium capitalize ${
+                                  keyword.commercialValue === 'high' ? 'text-green-600' :
+                                  keyword.commercialValue === 'medium' ? 'text-yellow-600' :
+                                  'text-red-600'
+                                }`}>
+                                  {keyword.commercialValue}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {keyword.rankingOpportunity && (
+                            <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded text-xs">
+                              <span className="text-green-700 font-medium">Opportunity: </span>
+                              <span className="text-green-600">{keyword.rankingOpportunity}</span>
+                            </div>
+                          )}
+                          
+                          {keyword.contentStrategy && (
+                            <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                              <span className="text-blue-700 font-medium">Strategy: </span>
+                              <span className="text-blue-600">{keyword.contentStrategy}</span>
+                            </div>
+                          )}
+                          
+                          {keyword.businessAlignment && (
+                            <div className="mt-2 p-2 bg-purple-50 border border-purple-200 rounded text-xs">
+                              <span className="text-purple-700 font-medium">Business Alignment: </span>
+                              <span className="text-purple-600">{keyword.businessAlignment}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col items-end gap-2">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        keyword.relevance === 'high' ? 'bg-green-100 text-green-800' :
-                        keyword.relevance === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                        (keyword.difficulty || keyword.relevance) === 'high' ? 'bg-red-100 text-red-800' :
+                        (keyword.difficulty || keyword.relevance) === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                        (keyword.difficulty || keyword.relevance) === 'low' ? 'bg-green-100 text-green-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {keyword.relevance} relevance
+                        {keyword.difficulty ? `${keyword.difficulty} difficulty` : `${keyword.relevance || 'medium'} relevance`}
                       </span>
-                      <span className="text-sm text-gray-500">#{keyword.priority}</span>
                     </div>
                   </div>
                 </div>
